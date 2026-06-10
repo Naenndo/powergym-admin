@@ -37,5 +37,8 @@ const PaymentSchema = new Schema<IPayment>(
   { timestamps: true }
 );
 
+PaymentSchema.index({ member: 1, date: -1 });
+PaymentSchema.index({ status: 1 });
+
 export default mongoose.models.Payment ||
   mongoose.model<IPayment>("Payment", PaymentSchema, "Payments");

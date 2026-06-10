@@ -21,5 +21,8 @@ const AttendanceSchema = new Schema<IAttendance>(
   { timestamps: true }
 );
 
+AttendanceSchema.index({ member: 1, checkIn: -1 });
+AttendanceSchema.index({ checkIn: 1 });
+
 export default mongoose.models.Attendance ||
   mongoose.model<IAttendance>("Attendance", AttendanceSchema, "Attendances");

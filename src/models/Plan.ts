@@ -29,4 +29,7 @@ const PlanSchema = new Schema<IPlan>(
   { timestamps: true }
 );
 
+PlanSchema.index({ active: 1 });
+PlanSchema.index({ price: 1 });
+
 export default mongoose.models.Plan || mongoose.model<IPlan>("Plan", PlanSchema, "Plans");

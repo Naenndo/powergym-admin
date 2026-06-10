@@ -43,5 +43,10 @@ const MemberSchema = new Schema<IMember>(
   { timestamps: true }
 );
 
+MemberSchema.index({ email: 1 });
+MemberSchema.index({ status: 1 });
+MemberSchema.index({ plan: 1 });
+MemberSchema.index({ dni: 1 }, { unique: true });
+
 export default mongoose.models.Member ||
   mongoose.model<IMember>("Member", MemberSchema, "Members");
