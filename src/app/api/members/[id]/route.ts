@@ -13,7 +13,7 @@ export async function GET(
     await connectDB();
     const { id } = await params;
     const db = mongoose.connection.db;
-    const member = await db!.collection("Members").findOne({ _id: id as any });
+    const member = await db!.collection("Members").findOne({ _id: new mongoose.Types.ObjectId(id) });
     if (!member) {
       return Response.json({ error: "Member not found" }, { status: 404 });
     }
@@ -37,7 +37,7 @@ export async function PUT(
     const body = await request.json();
     const db = mongoose.connection.db;
     const result = await db!.collection("Members").findOneAndUpdate(
-      { _id: id as any },
+      { _id: new mongoose.Types.ObjectId(id) },
       { $set: body },
       { returnDocument: "after" }
     );
@@ -62,7 +62,7 @@ export async function DELETE(
     await connectDB();
     const { id } = await params;
     const db = mongoose.connection.db;
-    const result = await db!.collection("Members").findOneAndDelete({ _id: id as any });
+    const result = await db!.collection("Members").findOneAndDelete({ _id: new mongoose.Types.ObjectId(id) });
     if (!result) {
       return Response.json({ error: "Member not found" }, { status: 404 });
     }

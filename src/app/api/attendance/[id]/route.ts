@@ -15,7 +15,7 @@ export async function PUT(
     const body = await request.json();
     const db = mongoose.connection.db;
     const result = await db!.collection("Attendances").findOneAndUpdate(
-      { _id: id as any },
+      { _id: new mongoose.Types.ObjectId(id) },
       { $set: body },
       { returnDocument: "after" }
     );
@@ -43,7 +43,7 @@ export async function DELETE(
     await connectDB();
     const { id } = await params;
     const db = mongoose.connection.db;
-    const result = await db!.collection("Attendances").findOneAndDelete({ _id: id as any });
+    const result = await db!.collection("Attendances").findOneAndDelete({ _id: new mongoose.Types.ObjectId(id) });
     if (!result) {
       return Response.json(
         { error: "Attendance not found" },

@@ -16,7 +16,7 @@ export async function GET(
     
     // Try using native MongoDB driver
     const db = mongoose.connection.db;
-    const plan = await db!.collection("Plans").findOne({ _id: id as any });
+    const plan = await db!.collection("Plans").findOne({ _id: new mongoose.Types.ObjectId(id) });
     console.log("Found plan:", plan ? plan.name : "NOT FOUND");
     
     if (!plan) {
@@ -45,7 +45,7 @@ export async function PUT(
     // Try using native MongoDB driver
     const db = mongoose.connection.db;
     const result = await db!.collection("Plans").findOneAndUpdate(
-      { _id: id as any },
+      { _id: new mongoose.Types.ObjectId(id) },
       { $set: body },
       { returnDocument: "after" }
     );
@@ -74,7 +74,7 @@ export async function DELETE(
     
     // Try using native MongoDB driver
     const db = mongoose.connection.db;
-    const result = await db!.collection("Plans").findOneAndDelete({ _id: id as any });
+    const result = await db!.collection("Plans").findOneAndDelete({ _id: new mongoose.Types.ObjectId(id) });
     
     if (!result) {
       return Response.json({ error: "Plan not found" }, { status: 404 });
