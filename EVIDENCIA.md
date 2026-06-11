@@ -3,7 +3,7 @@
 ## Información del Proyecto
 
 - **Proyecto:** PowerGym Admin — Sistema de Administración de Gimnasio
-- **Alumno:** [Tu nombre aquí]
+- **Alumno:** Angel Fernando Sandoval Rodriguez
 - **Materia:** Base de Datos Avanzado
 - **Institución:** UADEO
 - **Fecha:** Junio 2026
