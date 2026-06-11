@@ -105,7 +105,8 @@ export default function SociosPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Error al actualizar");
         toast.success("Socio actualizado");
       } else {
         const res = await fetch("/api/members", {
@@ -113,7 +114,8 @@ export default function SociosPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Error al crear");
         toast.success("Socio creado");
       }
 
@@ -121,8 +123,9 @@ export default function SociosPage() {
       setEditing(null);
       setForm(emptyForm);
       fetchMembers();
-    } catch {
-      toast.error(editing ? "Error al actualizar" : "Error al crear");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : (editing ? "Error al actualizar" : "Error al crear");
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -150,11 +153,13 @@ export default function SociosPage() {
     if (!confirm("¿Eliminar este socio?")) return;
     try {
       const res = await fetch(`/api/members/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al eliminar");
       toast.success("Socio eliminado");
       fetchMembers();
-    } catch {
-      toast.error("Error al eliminar");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error al eliminar";
+      toast.error(message);
     }
   };
 
@@ -168,11 +173,13 @@ export default function SociosPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al actualizar estado");
       toast.success("Estado actualizado");
       fetchMembers();
-    } catch {
-      toast.error("Error al actualizar estado");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error al actualizar estado";
+      toast.error(message);
     }
   };
 
