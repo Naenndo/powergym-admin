@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Member from "@/models/Member";
-import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -12,18 +11,14 @@ export async function GET(
   try {
     await connectDB();
     const { id } = await params;
-    const db = mongoose.connection.db;
-    const member = await db!.collection("Members").findOne({ _id: new mongoose.Types.ObjectId(id) });
+    const member = await Member.findById(id).populate("plan");
     if (!member) {
-      return Response.json({ error: "Member not found" }, { status: 404 });
+      return Response.json({ error: "Socio no encontrado" }, { status: 404 });
     }
     return Response.json(member);
-  } catch (error: any) {
-    console.error("Error fetching member:", error);
-    return Response.json(
-      { error: error.message || "Error fetching member" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al buscar socio";
+    return Response.json({ error: message }, { status: 500 });
   }
 }
 
@@ -35,22 +30,17 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const body = await request.json();
-    const db = mongoose.connection.db;
-    const result = await db!.collection("Members").findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(id) },
-      { $set: body },
-      { returnDocument: "after" }
-    );
-    if (!result) {
-      return Response.json({ error: "Member not found" }, { status: 404 });
+    const member = await Member.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    }).populate("plan");
+    if (!member) {
+      return Response.json({ error: "Socio no encontrado" }, { status: 404 });
     }
-    return Response.json(result);
-  } catch (error: any) {
-    console.error("Error updating member:", error);
-    return Response.json(
-      { error: error.message || "Error updating member" },
-      { status: 500 }
-    );
+    return Response.json(member);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al actualizar socio";
+    return Response.json({ error: message }, { status: 500 });
   }
 }
 
@@ -61,17 +51,13 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const db = mongoose.connection.db;
-    const result = await db!.collection("Members").findOneAndDelete({ _id: new mongoose.Types.ObjectId(id) });
-    if (!result) {
-      return Response.json({ error: "Member not found" }, { status: 404 });
+    const member = await Member.findByIdAndDelete(id);
+    if (!member) {
+      return Response.json({ error: "Socio no encontrado" }, { status: 404 });
     }
-    return Response.json({ message: "Member deleted" });
-  } catch (error: any) {
-    console.error("Error deleting member:", error);
-    return Response.json(
-      { error: error.message || "Error deleting member" },
-      { status: 500 }
-    );
+    return Response.json({ message: "Socio eliminado correctamente" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al eliminar socio";
+    return Response.json({ error: message }, { status: 500 });
   }
 }

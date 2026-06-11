@@ -1,9 +1,26 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Attendance from "@/models/Attendance";
-import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    const attendance = await Attendance.findById(id).populate("member");
+    if (!attendance) {
+      return Response.json({ error: "Asistencia no encontrada" }, { status: 404 });
+    }
+    return Response.json(attendance);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al buscar asistencia";
+    return Response.json({ error: message }, { status: 500 });
+  }
+}
 
 export async function PUT(
   request: NextRequest,
@@ -13,25 +30,17 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const body = await request.json();
-    const db = mongoose.connection.db;
-    const result = await db!.collection("Attendances").findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(id) },
-      { $set: body },
-      { returnDocument: "after" }
-    );
-    if (!result) {
-      return Response.json(
-        { error: "Attendance not found" },
-        { status: 404 }
-      );
+    const attendance = await Attendance.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    }).populate("member");
+    if (!attendance) {
+      return Response.json({ error: "Asistencia no encontrada" }, { status: 404 });
     }
-    return Response.json(result);
-  } catch (error: any) {
-    console.error("Error updating attendance:", error);
-    return Response.json(
-      { error: error.message || "Error updating attendance" },
-      { status: 500 }
-    );
+    return Response.json(attendance);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al actualizar asistencia";
+    return Response.json({ error: message }, { status: 500 });
   }
 }
 
@@ -42,20 +51,13 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const db = mongoose.connection.db;
-    const result = await db!.collection("Attendances").findOneAndDelete({ _id: new mongoose.Types.ObjectId(id) });
-    if (!result) {
-      return Response.json(
-        { error: "Attendance not found" },
-        { status: 404 }
-      );
+    const attendance = await Attendance.findByIdAndDelete(id);
+    if (!attendance) {
+      return Response.json({ error: "Asistencia no encontrada" }, { status: 404 });
     }
-    return Response.json({ message: "Attendance deleted" });
-  } catch (error: any) {
-    console.error("Error deleting attendance:", error);
-    return Response.json(
-      { error: error.message || "Error deleting attendance" },
-      { status: 500 }
-    );
+    return Response.json({ message: "Asistencia eliminada correctamente" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al eliminar asistencia";
+    return Response.json({ error: message }, { status: 500 });
   }
 }
