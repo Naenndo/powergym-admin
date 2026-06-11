@@ -5,13 +5,14 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthRoute = pathname.startsWith("/api/auth");
+  const isTestRoute = pathname.startsWith("/api/test-db");
   const isLoginPage = pathname === "/login";
   const isStaticFile =
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     pathname.endsWith(".ico");
 
-  if (!token && !isAuthRoute && !isLoginPage && !isStaticFile) {
+  if (!token && !isAuthRoute && !isTestRoute && !isLoginPage && !isStaticFile) {
     if (pathname.startsWith("/api")) {
       return Response.json({ error: "No autorizado" }, { status: 401 });
     }
