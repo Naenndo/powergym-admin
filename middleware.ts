@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthRoute = pathname.startsWith("/api/auth");
-  const isTestRoute = pathname.startsWith("/api/test-db") || pathname.startsWith("/api/test-login");
+  const isTestRoute = pathname.startsWith("/api/test-db") || pathname.startsWith("/api/test-login") || pathname.startsWith("/api/test-login-post");
   const isLoginPage = pathname === "/login";
   const isStaticFile =
     pathname.startsWith("/_next") ||
